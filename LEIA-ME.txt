@@ -1,20 +1,24 @@
-VÊNIX SCHOOL SECURITY — VERSÃO CORRIGIDA
+# Painel de Ocorrências (Protótipo)
 
-COMO ABRIR NO CELULAR OU COMPUTADOR
+## Como abrir no celular ou computador
+
 1. Extraia o ZIP inteiro (não abra somente o index.html de dentro do visualizador do ZIP).
-2. Mantenha index.html, style.css e app.js juntos na mesma pasta.
-3. Abra index.html no Chrome, Edge ou Firefox.
+2. Mantenha `index.html`, `style.css` e `app.js` juntos na mesma pasta.
+3. Abra o `index.html` no Chrome, Edge ou Firefox.
 
-ESTRUTURA
-- index.html: painel principal
-- style.css: aparência e adaptação para telas menores
-- app.js: relógio e simulação de ocorrências
+## Estrutura
 
-CORREÇÕES
+- `index.html`: painel principal
+- `style.css`: aparência e adaptação para telas menores
+- `app.js`: relógio e simulação de ocorrências
+
+## Correções
+
 - Arquivos principais diretamente na raiz do ZIP para facilitar a extração.
 - Referências de CSS e JavaScript com versão para evitar cache antigo.
 - Layout responsivo para celular e computador.
 - Mantidos os cartões das duas entradas e o botão de simular ocorrência.
 
-IMPORTANTE
-Este pacote é um protótipo demonstrativo. Não está conectado a câmeras, sensores, controle de acesso, banco de dados, Cloudflare ou WhatsApp. As ocorrências são fictícias. Não use para decisões reais de liberação ou retirada de alunos. Uma implantação real exige integração, testes, controle de acesso, validação de privacidade/LGPD e conferência humana.
+## Importante
+
+> Este pacote é um protótipo demonstrativo. Não está conectado a câmeras, sensores, controle de acesso, banco de dados, Cloudflare ou WhatsApp. As ocorrências são fictícias. Não use para decisões reais de liberação ou retirada de alunos. Uma implantação real exige integração, testes, controle de acesso, validação de privacidade/LGPD e conferência humana.
