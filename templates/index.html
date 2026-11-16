@@ -227,6 +227,166 @@ main{padding:12px}
     </div>
 </section>
 
+<!-- VÊNIX SCHOOL SECURITY - CADASTRO DE CÂMERAS IP -->
+<section id="cadastro-cameras" class="vx-camera-module">
+  <style>
+    .vx-camera-module{color:#e8edf5;font-family:Arial,sans-serif}
+    .vx-camera-module *{box-sizing:border-box}
+    .vx-camera-module .panel{background:#172235;border:1px solid #30415c;border-radius:14px;padding:18px;margin:14px 0}
+    .vx-camera-module .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .vx-camera-module label{display:block;margin-bottom:5px;font-size:13px}
+    .vx-camera-module input,.vx-camera-module select{width:100%;padding:11px;border-radius:8px;border:1px solid #465873;background:#0f1928;color:white}
+    .vx-camera-module button{padding:11px 15px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;margin:8px 5px 0 0}
+    .vx-camera-module .primary{background:#ffb347;color:#18202c}
+    .vx-camera-module .secondary{background:#30415c;color:white}
+    .vx-camera-module .danger{background:#8e3038;color:white}
+    .vx-camera-module .note{font-size:13px;color:#c5d0df}
+    .vx-camera-module .message,.vx-camera-module .camera-card{padding:12px;background:#20344a;border-radius:8px;margin-top:10px}
+    @media(max-width:560px){.vx-camera-module .grid{grid-template-columns:1fr}}
+  </style>
+
+  <div class="panel">
+    <h2>Cadastro de câmeras IP</h2>
+    <p class="note">Gerenciamento das câmeras dos pontos de entrada e saída.</p>
+    <form id="vxCameraForm">
+      <input type="hidden" id="vxCameraId">
+      <div class="grid">
+        <div><label>Nome da câmera *</label><input id="vxCameraName" required placeholder="Câmera Entrada Principal"></div>
+        <div><label>Fabricante *</label>
+          <select id="vxCameraBrand" required>
+            <option value="">Selecione</option><option>Intelbras</option><option>Hikvision</option><option>Outro</option>
+          </select>
+        </div>
+        <div><label>Endereço IP *</label><input id="vxCameraIp" required placeholder="192.168.1.201"></div>
+        <div><label>Porta *</label><input id="vxCameraPort" type="number" min="1" max="65535" value="80" required></div>
+        <div><label>Usuário</label><input id="vxCameraUser" autocomplete="off"></div>
+        <div><label>Senha (não será salva)</label><input id="vxCameraPassword" type="password" autocomplete="new-password"></div>
+        <div><label>Ponto de instalação *</label>
+          <select id="vxCameraPoint" required>
+            <option value="">Selecione</option><option>Entrada 1</option><option>Entrada 2</option><option>Entrada 3</option><option>Outro ponto</option>
+          </select>
+        </div>
+        <div><label>Protocolo</label>
+          <select id="vxCameraProtocol">
+            <option>ONVIF</option><option>HTTP</option><option>HTTPS</option><option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <button class="primary" type="submit">Salvar câmera</button>
+      <button class="secondary" type="button" id="vxCameraClear">Limpar</button>
+    </form>
+    <div id="vxCameraMessage" class="message">Aguardando cadastro.</div>
+  </div>
+
+  <div class="panel">
+    <h3>Câmeras cadastradas</h3>
+    <div id="vxCameraList"><p class="note">Nenhuma câmera cadastrada.</p></div>
+  </div>
+  <div class="panel">
+    <h3>Teste de conexão</h3>
+    <p class="note">O teste real ONVIF/RTSP depende do servidor local da escola.</p>
+    <button class="secondary" type="button" id="vxCameraTest">Verificar serviço</button>
+    <div id="vxCameraTestMessage" class="message">Aguardando teste.</div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const KEY="venix_school_security_cameras_v1";
+  const $=id=>document.getElementById(id);
+  const form=$("vxCameraForm");
+  const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}};
+  const write=data=>localStorage.setItem(KEY,JSON.stringify(data));
+  const say=(text,error=false)=>{
+    $("vxCameraMessage").textContent=text;
+    $("vxCameraMessage").style.border=error?"1px solid #d45b63":"1px solid #4b9b72";
+  };
+  function clear(){
+    form.reset();$("vxCameraId").value="";$("vxCameraPort").value=80;
+    $("vxCameraPassword").value="";
+  }
+  function validIP(ip){
+    const p=ip.trim().split(".");
+    return p.length===4&&p.every(x=>/^\d{1,3}$/.test(x)&&+x>=0&&+x<=255);
+  }
+  function render(){
+    const list=$("vxCameraList");list.replaceChildren();
+    const cameras=read();
+    if(!cameras.length){
+      const p=document.createElement("p");p.className="note";
+      p.textContent="Nenhuma câmera cadastrada.";list.appendChild(p);return;
+    }
+    cameras.forEach(c=>{
+      const card=document.createElement("div");card.className="camera-card";
+      const title=document.createElement("strong");title.textContent=c.name;
+      const info=document.createElement("p");
+      info.textContent=c.brand+" • "+c.ip+":"+c.port+" • "+c.point+" • "+c.protocol;
+      const actions=document.createElement("div");
+      const edit=document.createElement("button");edit.className="secondary";
+      edit.textContent="Editar";edit.type="button";
+      edit.onclick=()=>{
+        $("vxCameraId").value=c.id;
+        $("vxCameraName").value=c.name;
+        $("vxCameraBrand").value=c.brand;
+        $("vxCameraIp").value=c.ip;
+        $("vxCameraPort").value=c.port;
+        $("vxCameraUser").value=c.username||"";
+        $("vxCameraPoint").value=c.point;
+        $("vxCameraProtocol").value=c.protocol;
+        $("vxCameraPassword").value="";
+        say("Editando "+c.name+". Salve para confirmar.");
+        form.scrollIntoView({behavior:"smooth"});
+      };
+      const del=document.createElement("button");del.className="danger";
+      del.textContent="Excluir";del.type="button";
+      del.onclick=()=>{
+        if(confirm("Excluir "+c.name+"?")){
+          write(read().filter(x=>x.id!==c.id));render();say("Câmera excluída.");
+        }
+      };
+      actions.append(edit,del);card.append(title,info,actions);list.appendChild(card);
+    });
+  }
+  form.addEventListener("submit",e=>{
+    e.preventDefault();
+    const ip=$("vxCameraIp").value.trim();
+    const port=Number($("vxCameraPort").value);
+    if(!validIP(ip)){say("Endereço IP inválido.",true);return;}
+    if(!Number.isInteger(port)||port<1||port>65535){say("Porta inválida.",true);return;}
+    const data=read();
+    const id=$("vxCameraId").value||(crypto.randomUUID?crypto.randomUUID():String(Date.now()));
+    const camera={
+      id,name:$("vxCameraName").value.trim(),
+      brand:$("vxCameraBrand").value,ip,port,
+      username:$("vxCameraUser").value.trim(),
+      point:$("vxCameraPoint").value,
+      protocol:$("vxCameraProtocol").value
+    };
+    if(!camera.name||!camera.brand||!camera.point){say("Preencha os campos obrigatórios.",true);return;}
+    const i=data.findIndex(x=>x.id===id);
+    if(i>=0)data[i]=camera;else data.push(camera);
+    try{
+      write(data);clear();render();
+      say("Câmera salva neste navegador. A senha não foi armazenada.");
+    }catch(err){say("Erro ao salvar cadastro.",true);}
+  });
+  $("vxCameraClear").addEventListener("click",clear);
+  $("vxCameraTest").addEventListener("click",async()=>{
+    const out=$("vxCameraTestMessage");
+    out.textContent="Verificando serviço do servidor...";
+    try{
+      const r=await fetch("/api/cameras/test",{method:"OPTIONS"});
+      out.textContent=r.status===404?
+        "Rota não encontrada. O backend precisa implementar o teste.":
+        "Rota respondeu com status "+r.status+". Isso ainda não confirma conexão com a câmera.";
+    }catch(e){
+      out.textContent="Servidor de teste não acessível. Verifique o backend local.";
+    }
+  });
+  render();
+})();
+</script>
+
 </main>
 </div>
 
