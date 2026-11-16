@@ -149,6 +149,84 @@ main{padding:12px}
 </div>
 </section>
 
+<section id="cameras">
+    <div style="padding:20px; background:#101b35; border-radius:12px; color:white;">
+
+        <h2 style="color:#ff8c00;">
+            📹 CONFIGURAÇÃO DE CÂMERAS IP
+        </h2>
+
+        <p>VÊNIX School Security</p>
+
+        <hr>
+
+        <h3>Cadastro de câmera</h3>
+
+        <label>Nome da câmera</label>
+        <input type="text"
+               id="cameraName"
+               placeholder="Ex: Entrada Principal"
+               style="width:100%;padding:10px;margin:8px 0;">
+
+        <label>Fabricante</label>
+        <select id="cameraBrand"
+                style="width:100%;padding:10px;margin:8px 0;">
+            <option value="">Selecione</option>
+            <option value="Intelbras">Intelbras</option>
+            <option value="Hikvision">Hikvision</option>
+            <option value="Outro">Outro</option>
+        </select>
+
+        <label>Endereço IP</label>
+        <input type="text"
+               id="cameraIP"
+               placeholder="Ex: 192.168.1.100"
+               style="width:100%;padding:10px;margin:8px 0;">
+
+        <label>Porta</label>
+        <input type="number"
+               id="cameraPort"
+               placeholder="Ex: 80"
+               style="width:100%;padding:10px;margin:8px 0;">
+
+        <label>Usuário</label>
+        <input type="text"
+               id="cameraUser"
+               placeholder="Usuário da câmera"
+               autocomplete="off"
+               style="width:100%;padding:10px;margin:8px 0;">
+
+        <label>Senha</label>
+        <input type="password"
+               id="cameraPassword"
+               placeholder="Senha da câmera"
+               autocomplete="new-password"
+               style="width:100%;padding:10px;margin:8px 0;">
+
+        <label>Canal de entrada</label>
+        <select id="cameraChannel"
+                style="width:100%;padding:10px;margin:8px 0;">
+            <option value="1">Entrada 1</option>
+            <option value="2">Entrada 2</option>
+            <option value="3">Entrada 3</option>
+        </select>
+
+        <hr>
+
+        <h3>Status da câmera</h3>
+
+        <p id="cameraStatus">
+            Aguardando configuração.
+        </p>
+
+        <p style="color:#ffb347;font-size:13px;">
+            O cadastro e o teste de conexão serão
+            ativados após a integração com o servidor.
+        </p>
+
+    </div>
+</section>
+
 </main>
 </div>
 
